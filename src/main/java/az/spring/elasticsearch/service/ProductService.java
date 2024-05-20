@@ -49,7 +49,9 @@ public class ProductService {
 
     public ProductResponseList searchHits(String name) throws IOException {
         SearchResponse<Product> searchResponse = elasticSearchClient.search(search -> search.index("products")
-                .query(query -> query.wildcard(type -> type.field("name").value(".*" + name + ".*"))), Product.class);
+                .query(q -> q.bool(b -> b.should(s -> s.match(m -> m.field("name").query(name).fuzziness("AUTO")))
+                        .should(s -> s.prefix(p -> p.field("name").value(name.toLowerCase())))
+                        .should(s -> s.wildcard(w -> w.field("name").value("*" + name.toLowerCase() + "*"))))), Product.class);
         List<Hit<Product>> hits = searchResponse.hits().hits();
         List<Product> products = new ArrayList<>();
         for (Hit<Product> hit : hits) {
