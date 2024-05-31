@@ -1,0 +1,51 @@
+{
+  "index_patterns": ["*"],
+  "template": {
+    "settings": {
+      "index": {
+        "routing": {
+          "allocation": {
+            "include": {
+              "_tier_preference": "data_content"
+            }
+          }
+        },
+        "number_of_shards": "1",
+        "analysis": {
+          "filter": {
+            "synonym_filter": {
+              "type": "synonym",
+              "synonyms_path": "analysis/synonyms.txt"
+            },
+            "edge_ngram_filter": {
+              "type": "edge_ngram",
+              "min_gram": "1",
+              "max_gram": "200"
+            }
+          },
+          "analyzer": {
+            "my_analyzer": {
+              "filter": [
+                "lowercase",
+                "synonym_filter",
+                "edge_ngram_filter"
+              ],
+              "type": "custom",
+              "tokenizer": "standard"
+            },
+            "my_search_analyzer": {
+              "filter": [
+                "lowercase",
+                "synonym_filter"
+              ],
+              "type": "custom",
+              "tokenizer": "standard"
+            }
+          }
+        },
+        "number_of_replicas": "1"
+      }
+    }
+  },
+  "priority": 1
+}
